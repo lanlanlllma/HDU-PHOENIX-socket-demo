@@ -18,7 +18,19 @@ int main(int argc, char *argv[])
     sa.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &sa, 0);
 
-    SocketServer server(std::stoi(argv[1]));
+    int port = 5140;
+    if (argc > 1 && argv[1] != nullptr) {
+      try {
+        port = std::stoi(argv[1]);
+      } catch (const std::exception &e) {
+        ERROR("Invalid port number: " + std::string(argv[1]));
+        ERROR("Using default port 5140");
+      }
+    } else {
+      INFO("No port specified, using default port 5140");
+    }
+
+    SocketServer server(port);
     std::shared_ptr<SocketServer> server_ptr(&server);
     Application<SocketServer> app(server_ptr);
 
